@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Todo List</title>
+</head>
+<body>
+    <div class ="container">
+        <h1>Create your todo list!</h1>
+        <div class="input-field">
+            <input type="text" placeholder="Work to be done" id="todo-input">
+            <button type = "button" onclick = "addTodo()">></button>
+        </div>
+        <div class="todo-list">
+            <ul id="todos"></ul>
+        </div>
+    </div>
+    <script >
+        let input = document.getElementById("todo-input");
+        let todoList = document.getElementById("todos");
+        function addTodo(){
+            let TodoDiv = document.createElement("span");
+            
+            let newTodo = document.createElement("li");
+            if(input.value.trim()!==""){
+                
+
+                let deleteBtn = document.createElement("Button");
+                deleteBtn.textContent = "X";
+                deleteBtn.id ="BtnDelete";
+                deleteBtn.onclick  = function () {
+                    deleteTodo(TodoDiv);
+                };
+                let taskText = document.createTextNode(" " + input.value);
+
+                let checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.onchange = function () {
+                    completeTask(newTodo, taskText.textContent, checkbox.checked);
+                };
+
+                newTodo.appendChild(taskText);
+
+                TodoDiv.appendChild(checkbox);
+                TodoDiv.appendChild(newTodo);
+                TodoDiv.appendChild(deleteBtn);
+
+                todoList.appendChild(TodoDiv);
+            }
+            input.value = "";
+        }
+        function deleteTodo(target) {
+            target.remove();  
+        }
+        function completeTask(target, text, isChecked) {
+            if (isChecked) {
+                // If checked, strikethrough the task
+                target.innerHTML = `<p><s>${text}</s> &#128526&#129395&#128576</p>`;
+            } else {
+                // If unchecked, restore normal text
+                target.textContent = text;
+            }
+        }
+    </script>
+</body>
+</html>
