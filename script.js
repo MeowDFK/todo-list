@@ -1,7 +1,7 @@
 let input = document.getElementById("todo-input");
 let todoList = document.getElementById("todos");
 /*note: localStorage用法
-    任何操作-> 
+    任何操作->
         1.load from storage using JSON.parse()
         2.do the operation
         3.set the item to storage (remember using JSON.stringify())*/
@@ -25,7 +25,7 @@ function updateTodo(task,isCompleted){
     localStorage.setItem("todos",JSON.stringify(todos));
 }
 function addTodo(){
-    
+
     if(input.value.trim()!==""){
         let str = input.value;
         let offset = 0;
@@ -36,7 +36,6 @@ function addTodo(){
                 str = input.value+"("+offset+")";
             }
         });
-        
         addingTodo(str,false);
         saveTodo(str,false);
     }
@@ -51,19 +50,19 @@ function addingTodo(inputValue,isCompleted){
         deleteBtn.id ="BtnDelete";
         deleteBtn.onclick  = function () {
             deleteTodo(TodoDiv,inputValue);
-            
+
         };
-        
+
 
         let checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked=isCompleted;
-        
+
         checkbox.onchange = function () {
             updateTodo(inputValue,checkbox.checked);
             completeTask(newTodo, taskText.textContent, checkbox.checked);
         };
-        
+
         newTodo.appendChild(taskText);
 
         TodoDiv.appendChild(checkbox);
@@ -75,7 +74,7 @@ function addingTodo(inputValue,isCompleted){
         //List.push(input)
 }
 function deleteTodo(target,taskText) {
-    target.remove();  
+    target.remove();
 
     let todos = JSON.parse(localStorage.getItem("todos")) || [];
     //filter不會直接影響caller
@@ -89,10 +88,10 @@ function saveTodo(task, isCompleted){
 }
 function completeTask(target, text, isChecked) {
     if (isChecked) {
-        
+
         target.innerHTML = `<p><s>${text}</s> &#128526&#129395&#128576</p>`;
     } else {
-        
+
         target.textContent = text;
     }
 }
