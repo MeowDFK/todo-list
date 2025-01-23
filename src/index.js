@@ -1,3 +1,4 @@
+import './style.css';
 let input = document.getElementById("todo-input");
 let todoList = document.getElementById("todos");
 /*note: localStorage用法
