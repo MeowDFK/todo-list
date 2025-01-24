@@ -18,3 +18,5 @@ build/
 
 #eslint
 eslint.config.mjs
+
+tasks.js
