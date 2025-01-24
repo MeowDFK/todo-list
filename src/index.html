@@ -3,14 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content=" 'self'  http://127.0.0.1:5500/dist/main.js;">
+
     <title>Todo List</title>
 </head>
-<body>
-    <div class ="container">
+<body class ="bg-gray-950 flex text-stone-50">
+    <div class = "items-center py-8 top-0 left-0 w-48 p-0 m-0 h-screen flex flex-col bg-violet-300 text-gray-950  shadow-xl shadow-blue-gray-900/5">
+        <ul>
+
+        </ul>
+    </div>
+    <div class ="container flex flex-col h-screen py-8 overflow-y-auto  items-center">
         <h1>Create your todo list!</h1>
+
         <div class="input-field">
             <input type="text" placeholder="Work to be done" id="todo-input">
-            <button type = "button" onclick = "addTodo()">></button>
+            <button id="addTodoButton" type = "button"  >></button>
         </div>
         <div class="todo-list">
             <ul id="todos"></ul>
