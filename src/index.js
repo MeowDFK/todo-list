@@ -1,6 +1,8 @@
-import './style.css';
+import './output.css';
 let input = document.getElementById("todo-input");
 let todoList = document.getElementById("todos");
+window.addTodo = addTodo;
+document.getElementById("addTodoButton").addEventListener("click", addTodo);
 /*note: localStorage用法
     任何操作->
         1.load from storage using JSON.parse()
