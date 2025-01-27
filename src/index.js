@@ -1,10 +1,12 @@
 import './output.css';
-import Project from './Project.js';
+import ProjectManager from './projectManager.js';
+import Task from './task.js';
+let selectedProject = null;
 let closeDialogButtons = document.getElementsByName('closeDialog');
 let input = document.getElementById("todo-input");
 let projectList = document.getElementById("projects");
 const TaskDialog = document.getElementById("TaskDialog");
-const TaskForm = TaskDialog.querySelector("form");
+
 
 const ProjectDialog = document.getElementById("ProjectDialog");
 const ProjectForm = ProjectDialog.querySelector("form");
@@ -30,19 +32,11 @@ closeDialogButtons.forEach(button=>{
 ProjectForm.addEventListener("submit",(e)=>{
     e.preventDefault();
     const name = ProjectForm.elements["projectName"];
-    Project.addProject(name.value);
+    ProjectManager.addProject(name.value);
     name.value="";
     ProjectDialog.close();
 });
-TaskForm.addEventListener("submit",(e)=>{
-    e.preventDefault();
-    const title = TaskForm.elements["Title"];
-    const description = TaskForm.elements["Description"];
-    const date = TaskForm.elements["Date"];
-    const priority = TaskForm.elements["Priority"];
-    TaskForm.reset();
-    TaskDialog.close();
-});
+
 //document.getElementById("addPrjectButton").addEventListener("click", addPrject);
 
 /*note: localStorage用法
@@ -51,7 +45,8 @@ TaskForm.addEventListener("submit",(e)=>{
         2.do the operation
         3.set the item to storage (remember using JSON.stringify())*/
 window.onload = function(){
-    Project.loadProjects();
+
+    ProjectManager.loadProjects();
 
 }
 
