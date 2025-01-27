@@ -1,4 +1,6 @@
 import {format} from "date-fns";
+const TaskList = document.getElementById("tasks");
+const TaskDialog = document.getElementById("TaskDialog");
 class Task {
     constructor(title, description, dueDate, priority){
         this.title = title;
@@ -6,22 +8,9 @@ class Task {
         this.dueDate = dueDate;
         this.priority = priority;
     }
-    set title(value){
-        if (!value.trim()) {
-            throw new Error("Title cannot be empty.");
-        }
-        this._title = value;
-    }
-    get title() {
-        return this._title;
-    }
-    set dueDate(value){
-        if (isNaN(Date.parse(value))) {
-            throw new Error("Invalid due date.");
-        }
-        this._dueDate = format(value,"yyyy-MM-dd");
-    }
-    get dueDate() {
-        return this._dueDate;
+    static saveTask(project,title,description,dueDate,priority){
+        let project = JSON.parse(localStorage.getItem("project"))||[];
+        project.push({title: title, description: description, dueDate:dueDate, priority: priority});
+        localStorage.setItem("project",JSON.stringify(project));
     }
 }

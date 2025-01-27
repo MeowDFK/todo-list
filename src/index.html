@@ -7,23 +7,94 @@
 
     <title>Todo List</title>
 </head>
-<body class ="bg-gray-950 flex text-stone-50">
-    <div class = "items-center py-8 top-0 left-0 w-48 p-0 m-0 h-screen flex flex-col bg-violet-300 text-gray-950  shadow-xl shadow-blue-gray-900/5">
-        <ul>
+<body class ="bg-gray-950 flex text-stone-50 m-8">
 
-        </ul>
+    <div class ="flex flex-row h-screen w-full py-5 overflow-hidden items-center justify-center ">
+        <div class = "items-center flex flex-col max-h-full my-8 h-180 max-w-full w-100 rounded-md bg-gray-900  overflow-hidden shadow-inner shadow-violet-500">
+            <div class="flex items-center justify-between w-full bg-gray-950  p-2 text-white ">
+                projects
+                <button name="AddProjectButton" type = "button"  class="w-10 h-5 hover:border-violet-500 hover:border-solid hover:bg-white hover:text-violet-500 group flex flex-col items-center justify-center rounded-md border-2 border-violet-200 text-sm leading-6 text-violet-200 font-medium py-3">
+                    +
+                </button>
+            </div>
+                <ul id="projects" class=" p-2 w-full space-y-2 overflow-y-auto" >
+                </ul>
+                <ul class="px-2 w-full space-y-2 " >
+                    <li name="AddProjectButton"  class="hover:border-violet-500 hover:border-solid hover:bg-white hover:text-violet-500 group w-full flex flex-col items-center justify-center rounded-md border-2 border-dashed border-violet-200 text-sm leading-6 text-violet-200 font-medium py-3">
+                        Add Project
+                    </li>
+                </ul>
+        </div>
+        <div class=" items-center flex flex-col max-h-full h-180 max-w-full w-250 rounded-md overflow-hidden shadow-inner shadow-violet-600">
+            <div class="flex items-center justify-between max-w-full w-250 bg-gray-950 py-2 p-2">
+                Tasks
+                <button name="AddTaskButton" type = "button"  class="w-10 h-5 hover:border-violet-500 hover:border-solid hover:bg-white hover:text-violet-500 group flex flex-col items-center justify-center rounded-md border-2 border-violet-200 text-sm leading-6 text-violet-200 font-medium py-3">
+                    +
+                </button>
+            </div>
+            <div class="tbg-gray-900 max-h-full h-200 max-w-full w-250 overflow-y-auto">
+                <ul id="tasks" class="flex flex-col space-y-2 items-center p-2">
+                    <li class= "w-full h-18 hover:border-white hover:border-solid hover:bg-violet-500 hover:text-white grid grid-cols-1 grid-rows-5 items-center rounded-md  order-dashed bg-gray-800 text-sm text-violet-200 font-medium py-3">
+                        <a class=" text-2xl font-bold p-2 row-start-2">title</a>
+                        <a class=" text-xs font-semibold text-right row-start-4 p-2">year-mm-dd</a>
+                        <a class=" text-xs p-2 row-start-5">description</a>
+                    </li>
+                    <li class= "w-full h-18 hover:border-white hover:border-solid hover:bg-violet-500 hover:text-white grid grid-cols-2 grid-rows-5 items-center rounded-md  order-dashed bg-gray-800 text-sm text-violet-200 font-medium py-3">
+                        <a class=" text-2xl font-bold p-2 row-start-2">title</a>
+                        <a class=" text-xs font-semibold text-right row-start-4 col-start-2 p-2">year-mm-dd</a>
+                        <a class=" text-xs p-2 row-start-5 text-wrap breaks-word">this is just some or maybe more</a>
+                    </li>
+                </ul>
+                <ul class="flex flex-col space-y-2 items-center px-2">
+                    <li name="AddTaskButton" class= "w-full h-16 hover:border-violet-500 hover:border-solid hover:bg-white hover:text-violet-500 flex flex-col items-center rounded-md justify-center border-2 border-dashed border-violet-200 text-sm text-violet-200 font-medium py-3">
+                        Add Task
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class ="container flex flex-col h-screen py-8 overflow-y-auto  items-center">
-        <h1>Create your todo list!</h1>
 
-        <div class="input-field">
-            <input type="text" placeholder="Work to be done" id="todo-input">
-            <button id="addTodoButton" type = "button"  >></button>
-        </div>
-        <div class="todo-list">
-            <ul id="todos"></ul>
-        </div>
-    </div>
+    <dialog id="ProjectDialog" class="place-self-center items-center h-full w-full bg-transparent backdrop-blur">
+        <form method="dialog" class="my-20 rounded-md shadow-violet-600 shadow-xl text-white caret-white py-2 flex flex-col w-100 items-center bg-gray-800 justify-self-center space-y-2">
+            <label class="text-xl font-bold" for="userInput">Setup Project Name</label>
+            <a>
+                <input name="projectName"class=" px-1 bg-white text-gray-950 rounded-md" placeholder="type here" type="text"  required>
+            </a>
+            <a class=" place-self-center p-2">
+                <button type="button" name="closeDialog" class="px-1 border border-white rounded-md place-self-end hover:bg-red-500">Close</button>
+                <button type="submit" class="px-1 border bg-violet-600 border-violet-500 rounded-md place-self-end hover:bg-violet-500">Submit</button>
+            </a>
+        </form>
+    </dialog>
+    <dialog id="TaskDialog" class=" items-center justify-center h-full w-full bg-transparent backdrop-blur" >
+        <form method="dialog"class="my-20 rounded-md shadow-violet-600 shadow-xl text-white caret-white py-2 flex flex-col w-100 items-center bg-gray-800 justify-self-center space-y-2">
+            <a class="p-2 font-bold text-2xl">Setup Task</a>
+            <a>
+                <label for="userInput">Title:</label>
+                <input class=" px-1 bg-white text-gray-950 rounded-md" type="text" placeholder="Title" name="Title" required>
+            </a>
+            <a>
+                <label for="userInput">Description:</label>
+                <input class="px-1 bg-white text-gray-950 rounded-md" type="text" value="N/A" name="Description" required>
+            </a>
+            <a>
+                <label for="userInput">Due Date:</label>
+                <input class="px-1 bg-white text-gray-950 rounded-md" type="date" name="Date" required>
+            </a>
+            <a>
+                <select class="bg-white text-gray-950 rounded-md" name ="Priority">
+                    <option value="default">priority1</option>
+                    <option >priority2</option>
+                    <option >priority3</option>
+                    <option >priority4</option>
+                </select>
+            </a>
+            <a class=" place-self-center p-2">
+                <button type="button" name="closeDialog" class="px-1 border border-white rounded-md place-self-end hover:bg-red-500">Close</button>
+                <button type="submit" id="submitDialog" class="px-1 border bg-violet-600 border-violet-500 rounded-md place-self-end hover:bg-violet-500">Submit</button>
+            </a>
+        </form>
+    </dialog>
 
 </body>
 </html>
