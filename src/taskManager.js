@@ -61,7 +61,7 @@ export default class TaskManager {
         const dateHtml = document.createElement('span');
         dateHtml.className = " date";
         const [year, month, day] = taskInstance.dueDate.split("-");
-        const formatDate = format(new Date(year, month, day),"yyyy-MM-dd");
+        const formatDate = format(new Date(year, month-1, day),"yyyy-MM-dd");
         dateHtml.textContent = formatDate;
 
         const descriptionHtml = document.createElement('span');
