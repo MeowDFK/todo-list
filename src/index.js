@@ -1,4 +1,4 @@
-import './output.css';
+import './style.css';
 import ProjectManager from './projectManager.js';
 import Task from './task.js';
 let selectedProject = null;
