@@ -2,7 +2,8 @@ import {format} from "date-fns";
 import Task from './task.js';
 const TaskList = document.getElementById("tasks");
 const TaskDialog = document.getElementById("TaskDialog");
-
+let editMode = false;
+let currentEditing =null;
 export default class TaskManager {
     constructor(parentProject) {
         this.parentProject=parentProject;
@@ -29,7 +30,23 @@ export default class TaskManager {
         });
     }
     addTask(title,description,dueDate,priority){
-        const taskInstance = new Task(title,description,dueDate,priority);
+        let str = title + ' ';
+        let offset = 0;
+        let tasks = JSON.parse(localStorage.getItem(this.parentProject))||[];
+        tasks.forEach(task=> {
+            tasks.forEach(task=> {
+                if(task.title === str){
+                    offset += 1;
+                    str = title+"("+offset+")";
+                }
+            });
+        });
+        const taskInstance = new Task(str,description,dueDate,priority);
+        if(editMode && currentEditing){
+            this.deleteTask(currentEditing,currentEditing.querySelector('.title').textContent);
+            editMode = false;
+            currentEditing=null;
+        }
         this.addingTask(taskInstance);
         this.saveTask(taskInstance);
 
@@ -55,7 +72,7 @@ export default class TaskManager {
                 break;
         }
         const titleHtml = document.createElement('span');
-        titleHtml.className =" title";
+        titleHtml.className ="title";
         titleHtml.textContent = taskInstance.title;
 
         const dateHtml = document.createElement('span');
@@ -90,6 +107,11 @@ export default class TaskManager {
         TaskList.appendChild(task);
         deleteBtn.addEventListener("click",() =>{
             this.deleteTask(task, taskInstance.title);
+        });
+        editBtn.addEventListener("click",() =>{
+            editMode = true;
+            currentEditing = task;
+            TaskDialog.showModal();
         });
     }
 }
