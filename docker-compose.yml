@@ -1,35 +1,32 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  todoList-api:
-    build: .
-    container_name: todo-api
-    ports:
-      - "8000:8000"
-    depends_on:
-      - todoList-db
-    env_file:
-      - .env
-    networks:
-      - todo-network
-
-  todoList-db:
-    image: postgres:15
-    container_name: todo-db
+  db:
+    image: postgres
+    container_name: todoList-db
     restart: always
     environment:
       POSTGRES_USER: todo
       POSTGRES_PASSWORD: password
       POSTGRES_DB: todo
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
-      - todo-network
+      - todo_network
 
-volumes:
-  postgres_data:
+  fastapi:
+    build: .
+    container_name: fastapi-app
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://todo:password@todoList-db:5432/todo"
+    ports:
+      - "8000:8000"
+    networks:
+      - todo_network
 
 networks:
-  todo-network:
+  todo_network:
+    driver: bridge
