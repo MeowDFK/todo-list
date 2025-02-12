@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  todoList-api:
+    build: .
+    container_name: todo-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - todoList-db
+    env_file:
+      - .env
+    networks:
+      - todo-network
+
+  todoList-db:
+    image: postgres:15
+    container_name: todo-db
+    restart: always
+    environment:
+      POSTGRES_USER: todo
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: todo
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - todo-network
+
+volumes:
+  postgres_data:
+
+networks:
+  todo-network:

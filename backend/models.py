@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, ForeignKey, Integer, Date
 from sqlalchemy.orm import relationship
-from backend.db import Base
+from db import Base
 #only know that index give efficiency in sorting or query in sql but further usage remains unknown but i decide to keep it for no reason...
 class Project(Base):
     __tablename__ = "projects"
