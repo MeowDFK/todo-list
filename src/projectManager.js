@@ -1,5 +1,5 @@
 import Task from './task.js';
-import Project from './project.js';
+import Project from './Project.js';
 const ProjectList = document.getElementById("projects");
 const ProjectDialog = document.getElementById("ProjectDialog");
 const TaskDialog = document.getElementById("TaskDialog");
