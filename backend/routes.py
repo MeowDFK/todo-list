@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db import get_db
-import models, schemas
+import models as models
+import schemas as schemas
 from crud import create_task, get_tasks_by_project, delete_task, update_task
 from crud import create_project,get_projects, delete_project, update_project
 from typing import List
