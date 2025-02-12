@@ -20,8 +20,8 @@ services:
     restart: always
     depends_on:
       - db
-    environment:
-      DATABASE_URL: "postgresql://todo:password@todoList-db:5432/todo"
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     networks:
