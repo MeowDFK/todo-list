@@ -5,7 +5,7 @@ class TaskCreate(BaseModel):
     title: str
     description: str
     due_date: date
-    priority: int
+    priority: str
     project_id: int
 
 
@@ -14,11 +14,11 @@ class TaskResponse(BaseModel):
     title: str
     description: str
     due_date: date
-    priority: int
+    priority: str
     project_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ProjectCreate(BaseModel):
@@ -28,7 +28,7 @@ class ProjectCreate(BaseModel):
 class ProjectResponse(BaseModel):
     id: int
     name: str
-    tasks: List[TaskResponse]
+    tasks: List[TaskResponse] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True

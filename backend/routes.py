@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from db import get_db
 import models as models
@@ -28,7 +28,7 @@ def update_project_route(project_id:int, project: schemas.ProjectCreate, db:Sess
     updated_project = update_project(db,project_id,project)
     if not updated_project:
         raise HTTPException(status_code=404, detail="Project not found")
-    return
+    return updated_project
 
 @router.post("/task", response_model=schemas.TaskResponse)
 def create_task_route(task: schemas.TaskCreate, db:Session = Depends(get_db)):
@@ -46,7 +46,7 @@ def delete_task_route(task_id: int, db:Session=Depends(get_db)):
         raise HTTPException(status_code=404, detail="Task not found")
     return
 
-@router.put("/task/{task_it}", response_model=schemas.TaskResponse)
+@router.put("/task/{task_id}", response_model=schemas.TaskResponse)
 def update_task_route(task_id: int,task: schemas.TaskCreate, db:Session=Depends(get_db)):
     updated_task = update_task(db,task_id,task)
     if not updated_task:

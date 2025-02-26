@@ -4,35 +4,90 @@ const TaskList = document.getElementById("tasks");
 const TaskDialog = document.getElementById("TaskDialog");
 let editMode = false;
 let currentEditing =null;
+var url = process.env.BACKEND_URL;
 export default class TaskManager {
-    constructor(parentProject) {
-        this.parentProject=parentProject;
+    constructor(project_id) {
+        this.project_id=project_id;
+        this.taskName_idMap = new Map();
     }
-    saveTask(taskInstance){
-        let tasks = JSON.parse(localStorage.getItem(this.parentProject))||[];
-        tasks.push(taskInstance);
-        localStorage.setItem(this.parentProject,JSON.stringify(tasks));
+    async saveTask(taskInstance){
+        taskInstance.project_id = this.project_id;
+        console.log(JSON.stringify(taskInstance, null, 2));
+        try {
+            const response = await fetch(url+"/task",{
+                headers: {'Content-Type': 'application/json'},
+                method: 'POST',
+                body: JSON.stringify(taskInstance),
+            });
+            const task = await response.json();
+            console.log(task);
+            this.taskName_idMap.set(task.title,task.id);
+            console.log(this.taskName_idMap);
+            this.addingTask(taskInstance);
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
-    deleteTask(target,taskText){
+    async getTask(){
+        try {
+            const response = await fetch(url+`/project/${this.project_id}/task`,{
+                method: 'GET',
+            });
+            const tasks = response.json();
+            return tasks;
+        }catch (error){
+            console.error(error);
+        }
+    }
+    async deleteTask(target,taskText){
         target.remove();
-        let tasks= JSON.parse(localStorage.getItem(this.parentProject))||[];
-        tasks= tasks.filter(tasks=> tasks.title !== taskText);
-        localStorage.setItem(this.parentProject,JSON.stringify(tasks));
+        const id = this.taskName_idMap.get(taskText);
+        this.taskName_idMap.delete(taskText);
+        try{
+            const response = await fetch(url+`/task/${id}`,{
+                method: 'DELETE',
+            })
+        }catch(error){
+            console.error(error);
+        }
     }
-    loadTask(){
-        let tasks = JSON.parse(localStorage.getItem(this.parentProject))||[];
+    async loadTask(){
+        const tasks = await this.getTask();
         TaskList.querySelectorAll('li').forEach(task=>{
             task.remove();
         });
         tasks.forEach(task => {
-            const taskInstance = new Task(task.title,task.description,task.dueDate,task.priority)
+            const taskInstance = new Task(task.title,task.description,task.due_date,task.priority)
+            this.taskName_idMap.set(task.title,task.id);
             this.addingTask(taskInstance);//not really a Task type
         });
     }
-    addTask(title,description,dueDate,priority){
+    async updateTask(oldName, newInstance){
+        const id = this.taskName_idMap.get(oldName);
+        newInstance.project_id = this.project_id;
+        console.log(this.taskName_idMap);
+        try{
+            const response = await fetch(url+`/task/${id}`,{
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newInstance),
+            })
+            const task = await response.json();
+            console.log(task);
+            this.taskName_idMap.set(task.title,task.id);
+            this.addingTask(newInstance);
+            this.taskName_idMap.delete(oldName);
+        }catch(error){
+            console.error(error);
+        }
+    }
+    async addTask(title,description,due_date,priority){
         let str = title + ' ';
         let offset = 0;
-        let tasks = JSON.parse(localStorage.getItem(this.parentProject))||[];
+        const tasks = await this.getTask();
         tasks.forEach(task=> {
             tasks.forEach(task=> {
                 if(task.title === str){
@@ -41,14 +96,17 @@ export default class TaskManager {
                 }
             });
         });
-        const taskInstance = new Task(str,description,dueDate,priority);
+        const taskInstance = new Task(str,description,due_date,priority);
         if(editMode && currentEditing){
-            this.deleteTask(currentEditing,currentEditing.querySelector('.title').textContent);
+            const oldName = currentEditing.querySelector('.title').textContent;
+            this.updateTask(oldName,taskInstance);
+            currentEditing.remove();
             editMode = false;
             currentEditing=null;
+        }else{
+            this.saveTask(taskInstance);
         }
-        this.addingTask(taskInstance);
-        this.saveTask(taskInstance);
+
 
     }
     addingTask(taskInstance){
@@ -77,7 +135,7 @@ export default class TaskManager {
 
         const dateHtml = document.createElement('span');
         dateHtml.className = " date";
-        const [year, month, day] = taskInstance.dueDate.split("-");
+        const [year, month, day] = taskInstance.due_date.split("-");
         const formatDate = format(new Date(year, month-1, day),"yyyy-MM-dd");
         dateHtml.textContent = formatDate;
 

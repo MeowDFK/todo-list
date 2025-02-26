@@ -1,7 +1,7 @@
 import TaskManager from "./taskManager";
 export default class project{
-    constructor(name){
-        this.name = name;
-        this.taskManager = new TaskManager(this.name);
+    constructor(id){
+        this.id = id;
+        this.taskManager = new TaskManager(this.id);
     }
 }
