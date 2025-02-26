@@ -22,7 +22,6 @@ def update_project(db: Session, project_id: int, project_data: schemas.ProjectCr
         return None # the error code is return in the router not inside crud operations!!!
     for key, value in project_data.model_dump().items():
         setattr(project,key,value)
-
     db.commit()
     db.refresh(project)
     return project

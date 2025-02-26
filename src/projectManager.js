@@ -10,6 +10,8 @@ let currentEditing =null;
 let curTaskManager =null;
 var projectMap = new Map();
 var htmlMap = new Map();
+var projectName_idMap = new Map();
+var url = process.env.BACKEND_URL;
 TaskForm.addEventListener("submit",(e)=>{
     e.preventDefault();
     const title = TaskForm.elements["Title"].value;
@@ -22,60 +24,132 @@ TaskForm.addEventListener("submit",(e)=>{
 });
 export default class ProjectManager{
     static VisAddTaskButton(){
-
         AddTaskButtons.forEach(button=>{
-                button.classList.remove("hidden");
-                button.classList.add("flex");
+            button.classList.remove("hidden");
+            button.classList.add("flex");
         })
 
     }
     static hideAddTaskButtons(){
-            AddTaskButtons.forEach(button=>{
-                button.classList.remove("flex");
-                button.classList.add("hidden");
+        AddTaskButtons.forEach(button=>{
+            button.classList.remove("flex");
+            button.classList.add("hidden");
         })
     }
     static setTaskManager(projectInstance){
-        curTaskManager=projectInstance.taskManager;
+        curTaskManager = projectInstance.taskManager;
         curTaskManager.loadTask();
         this.VisAddTaskButton();
     }
-    static resetTaskManager(){
+    static async resetTaskManager(){
         curTaskManager = null;
         this.hideAddTaskButtons();
-        let projects = JSON.parse(localStorage.getItem("projects")) || [];
-        if(projects.length>0){
-            htmlMap.get(projects[0].name).click();
+
+        const project = await this.getProjects();
+        if(project[0]){
+            htmlMap.get(project[0].id).click();
+        }
+
+    }
+    static async getProjects(){
+        try{
+            const response = await fetch(url+"/project",{
+                method: "GET",
+            })
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const project = await response.json();
+            return project;
+        }catch (error){
+            console.error(error.message);
         }
     }
-
-    static saveProject(projectInstance) {
-        let projects = JSON.parse(localStorage.getItem("projects")) || [];
-        projects.push(projectInstance);
-        localStorage.setItem("projects",JSON.stringify(projects));
+    static async saveProject(str) {
+        try{
+            const response = await fetch(url+"/project",{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ "name": str }),
+            })
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            const project = await response.json();
+            console.log(project);
+            const projectInstance = new Project(project.id);
+            this.setTaskManager(projectInstance);
+            const id = project.id
+            projectMap.set(id,projectInstance);
+            projectName_idMap.set(str,id);
+            htmlMap.set(id,this.addingProject(project));
+            htmlMap.get(id).click();
+        } catch (error) {
+          console.error(error.message);
+        }
     }
-    static deleteProject(target,projectText) {
-        target.remove();
-        let projects = JSON.parse(localStorage.getItem("projects")) || [];
-        localStorage.removeItem(projectText);
-        //filter不會直接影響caller
-        projects = projects.filter(project=>project.name !== projectText);
-        localStorage.setItem("projects",JSON.stringify(projects));
+    static async deleteProject(target,project_json) {
+        const id = project_json.id;
+        try{
+            const response = await fetch(url+`/project/${id}`,{
+                method: "DELETE",
+            })
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            target.remove();
+            this.updateMap(project_json)
+        }catch (error) {
+            console.error(error.message);
+        }
         this.resetTaskManager();
     }
-    static loadProjects(){
-        let projects = JSON.parse(localStorage.getItem("projects"))||[];
+    static updateMap(project_json){
+        const id = project_json.id;
+        const name = project_json.name;
+        projectName_idMap.delete(name);
+        projectMap.delete(id);
+        htmlMap.delete(id);
+    }
+    static async updateProject(oldName,newName){
+        const id = projectName_idMap.get(oldName);
+        try{
+            const response = await fetch(url+`/project/${id}`,{
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ "name": newName }),
+            })
+            const newProject = response.json();
+            projectName_idMap.set(newProject.name, newProject.id);
+            projectName_idMap.delete(oldName);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+        }catch (error) {
+            console.error(error.message);
+        }
+    }
+    static async loadProjects(){
+
+        const projects = await this.getProjects();
+        console.log("Fetched data:", projects);
         projects.forEach(project=> {
-            const projectInstance = new Project(project.name);
-            projectMap.set(project.name,projectInstance);
-            htmlMap.set(project.name,this.addingProject(project.name));
+            const projectInstance = new Project(project.id);
+            projectMap.set(project.id,projectInstance);
+            projectName_idMap.set(project.name,project.id);
+            htmlMap.set(project.id,this.addingProject(project));
         });
         this.resetTaskManager();
+
     }
-    static addingProject(value){
+    static addingProject(project_json){
         const project = document.createElement("li");
         project.className="project";
-        project.innerHTML +=`<t>${value}</t>`;
+        project.innerHTML +=`<t>${project_json.name}</t>`;
         const project_a = document.createElement("a");
         project_a.className="flex";
         const editBtn = document.createElement("button");
@@ -102,8 +176,8 @@ export default class ProjectManager{
             });
 
             console.log("Current ProjectMap:", projectMap);
-            console.log("Looking for:", value, "Found:", projectMap.get(value).taskManager.parentProject);
-            const projectInstance = projectMap.get(value);
+            console.log("Looking for:", project_json.name, "Found:", projectMap.get(project_json.id).taskManager.parentProject);
+            const projectInstance = projectMap.get(project_json.id);
             this.setTaskManager(projectInstance);
             // Set clicked project as active
             project.classList.add("selected-li");
@@ -111,7 +185,7 @@ export default class ProjectManager{
         });
         deleteBtn.addEventListener("click",(event)=>{
             event.stopPropagation();
-            this.deleteProject(project,value);
+            this.deleteProject(project,project_json);
         });
         project_a.appendChild(editBtn);
         project_a.appendChild(deleteBtn);
@@ -120,12 +194,12 @@ export default class ProjectManager{
         return project;
     }
 
-    static addProject(value){
+    static async addProject(value){
         this.VisAddTaskButton();
         if(value.trim()!==""){
             let str = value;
             let offset = 0;
-            let projects = JSON.parse(localStorage.getItem("projects"))||[];
+            let projects = await this.getProjects();
             projects.forEach(project=> {
                 projects.forEach(project=> {
                     if(project.name === str){
@@ -139,18 +213,10 @@ export default class ProjectManager{
                 const oldName = currentEditing.querySelector("t").textContent;
                 currentEditing.querySelector("t").textContent = str;
                 editMode = false;
-                this.deleteProject(currentEditing,oldName);
+                this.updateProject(oldName,str);
                 currentEditing = null;
-                let tasks=JSON.parse(localStorage.getItem(oldName))||[];
-                localStorage.setItem(str,JSON.stringify(tasks));
-                localStorage.removeItem(oldName);
             }
-            const projectInstance = new Project(str);
-            this.setTaskManager(projectInstance);
-            projectMap.set(str,projectInstance);
-            htmlMap.set(str,this.addingProject(str));
-            htmlMap.get(str).click();
-            this.saveProject(projectInstance);
+            else this.saveProject(str);
         }
     }
 
