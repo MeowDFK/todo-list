@@ -78,7 +78,7 @@ export default class ProjectManager{
                 throw new Error(`Response status: ${response.status}`);
             }
             const project = await response.json();
-            console.log(project);
+            //console.log(project);
             const projectInstance = new Project(project.id);
             this.setTaskManager(projectInstance);
             const id = project.id
@@ -136,7 +136,7 @@ export default class ProjectManager{
     static async loadProjects(){
 
         const projects = await this.getProjects();
-        console.log("Fetched data:", projects);
+        //console.log("Fetched data:", projects);
         projects.forEach(project=> {
             const projectInstance = new Project(project.id);
             projectMap.set(project.id,projectInstance);
@@ -175,8 +175,8 @@ export default class ProjectManager{
                 p.classList.add("unselected-li");
             });
 
-            console.log("Current ProjectMap:", projectMap);
-            console.log("Looking for:", project_json.name, "Found:", projectMap.get(project_json.id).taskManager.parentProject);
+            //console.log("Current ProjectMap:", projectMap);
+            //console.log("Looking for:", project_json.name, "Found:", projectMap.get(project_json.id).taskManager.parentProject);
             const projectInstance = projectMap.get(project_json.id);
             this.setTaskManager(projectInstance);
             // Set clicked project as active
