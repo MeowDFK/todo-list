@@ -12,7 +12,7 @@ export default class TaskManager {
     }
     async saveTask(taskInstance){
         taskInstance.project_id = this.project_id;
-        console.log(JSON.stringify(taskInstance, null, 2));
+        //console.log(JSON.stringify(taskInstance, null, 2));
         try {
             const response = await fetch(url+"/task",{
                 headers: {'Content-Type': 'application/json'},
@@ -20,9 +20,9 @@ export default class TaskManager {
                 body: JSON.stringify(taskInstance),
             });
             const task = await response.json();
-            console.log(task);
+            //console.log(task);
             this.taskName_idMap.set(task.title,task.id);
-            console.log(this.taskName_idMap);
+            //console.log(this.taskName_idMap);
             this.addingTask(taskInstance);
         }
         catch (error) {
@@ -66,7 +66,7 @@ export default class TaskManager {
     async updateTask(oldName, newInstance){
         const id = this.taskName_idMap.get(oldName);
         newInstance.project_id = this.project_id;
-        console.log(this.taskName_idMap);
+        //console.log(this.taskName_idMap);
         try{
             const response = await fetch(url+`/task/${id}`,{
                 method: "PUT",
@@ -76,7 +76,7 @@ export default class TaskManager {
                 body: JSON.stringify(newInstance),
             })
             const task = await response.json();
-            console.log(task);
+            //console.log(task);
             this.taskName_idMap.set(task.title,task.id);
             this.addingTask(newInstance);
             this.taskName_idMap.delete(oldName);
