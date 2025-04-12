@@ -51,10 +51,6 @@ window.onload = function(){
 }
 
 
-function updateProject(task,newName){
-    let projects = JSON.parse(localStorage.getItem("projects"))||[];
-
-}
 
 
 
